@@ -1,0 +1,19 @@
+.header-container{
+    display: flex;
+    height: 40px;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: rgb(138,138,138);
+    flex-direction: row;
+    justify-content: space-between;
+    position: fixed;
+    z-index: 100;
+}
+.header-email,
+.header-phone,
+.header-Github,
+.header-last-updated{
+    font-size: clamp(0.8rem,1.9vw,1.2rem);
+    color: white;
+}

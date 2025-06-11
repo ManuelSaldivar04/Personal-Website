@@ -1,0 +1,110 @@
+.personal-info-section{
+    width: 100%;
+    height: auto;
+    /*background properties*/
+    background-image: url('../Background Pictures/option2.jpg');
+    background-size:cover;
+    background-repeat: no-repeat;
+    min-height: 500px;
+    position: relative;
+    margin: 0 auto;
+    background-position: center center;
+}
+.personal-info-container{
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    place-self: center;
+    width: 66.666%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    gap:20px;
+    
+}
+.personal-info-left-side,
+.personal-info-right-side{
+    flex:1 1 0%;
+    min-width: 300px;
+    overflow:hidden;
+    color:white;
+}
+@media (max-width:750px){
+    .personal-info-left-side,
+    .personal-info-right-side{
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .personal-info-container{
+        width: 90%;
+        flex-direction: column;
+    }
+
+    .content-wrapper{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .personal-info-picture{
+        margin-bottom: 15px;
+    }
+}
+.content-wrapper{
+    display: flex;
+    width: 100%;
+}
+.personal-info-picture{
+    width: 50%;
+    height:auto;
+    border-radius: 50%;
+    display: block;
+    margin-bottom: 10px;
+}
+.personal-info-images-container{
+    display:inline-block;
+    width: 200px;
+    height: auto;
+    margin:0px;
+    margin-right: 5px;
+}
+@media(max-width:750px){
+    .personal-info-images-container{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap:10%;
+    }
+    .personal-info-picture{
+        width: 100%;
+    }
+}
+.personal-info-about-me,
+.personal-info-left-side p{
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    margin:5px 0px;
+    hyphens: auto;
+}
+.personal-info-about-me{
+    font-size: clamp(1.5rem,2vw,2rem);
+    font-weight: bold;
+}
+.personal-info-text-content{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding:10px 20px;
+    font-size: clamp(1rem,1.2vw,1.2rem);
+    line-height: 1.6;
+}
+.personal-info-text-content,
+.personal-info-right-side{
+    width: 100%;
+    box-sizing: border-box;
+}
+.personal-info-right-side{
+    width: auto;
+}

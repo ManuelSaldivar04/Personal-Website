@@ -1,0 +1,28 @@
+.footer-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    background-color: rgb(138,138,138);
+    padding: 20px 0;
+    min-height: 80px;
+    box-sizing: border-box;
+}
+.app-icons{
+    width: clamp(30px,8vw,60px);
+    height: auto;
+    transition: transform 0.3s ease;
+}
+.app-icons:hover{
+    transform: scale(1.1);
+}
+@media(max-width:750px){
+    .footer-container{
+        gap:20px;
+        padding: 30px 0;
+    }
+    .app-icons{
+        width: clamp(25px,12vw,50px);
+    }
+}

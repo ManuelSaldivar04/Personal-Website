@@ -1,0 +1,122 @@
+.categories-container{
+    display: grid;
+    align-content: start;
+    padding: 80px;
+    row-gap: 40px;
+    grid-template-rows:auto 1fr;
+    background-color: black;
+}
+.categories-container p{
+    color:white;
+}
+.categories-container > div:first-child{
+    text-align: center;
+    font-size: 2.5rem;
+    width:100%;
+    padding: 20px 0;
+    position: relative;
+}
+@media (max-width:750px){
+    .categories-container{
+        padding: 20px;
+        row-gap: 30px;
+        min-height: auto;
+    }
+}
+.subcategories-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap:30px;
+    background-color: black;
+    align-content: stretch;
+}
+@media (max-width:750px){
+    .subcategories-container{
+        grid-template-columns: 1fr;
+    }
+}
+.categories-button{
+     /*Button Styling*/
+     width: 100%;
+     min-height: 80px;
+     padding: 15px;
+     /*content layout*/
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     text-align: center;
+     /*responsive text*/
+     font-size:clamp(1rem,1.5vw,1.25rem);
+     line-height: 1.4;
+     /*prevent content overflow*/
+     box-sizing:border-box;
+     overflow-wrap: break-word;
+     /*cool button styling*/
+     border:none;
+     outline:none;
+     color:white;
+     cursor: pointer;
+     position: relative;
+     z-index: 0;
+}
+.categories-button::after{
+    content: "";
+    z-index:-1;
+    position: absolute;
+    width: 100%;
+    min-height: 80px;
+    background-color: #333;
+    left:0;
+    top:0;
+    border-radius: 10px;
+
+}
+/*button glow*/
+.categories-button::before{
+    content:"";
+    background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff7300,
+        #fffb00,
+        #48ff00,
+        #00ffd5,
+        #002bff,
+        #ff00c8,
+        #ff0000);
+    position: absolute;
+    top:-2px;
+    left:-2px;
+    background-size: 600%;
+    z-index:-1;
+    width:calc(100% + 4px);
+    height: calc(100% + 4px);
+    filter:blur(8px);
+    /*animation*/
+    animation: glowing 20s linear infinite;
+    transition: opacity 0.3s ease-in-out;
+    border-radius: 10px;
+    opacity: 1;
+    
+}
+.categories-button:hover::before{
+    opacity:1;
+}
+.categories-button:active:after{
+    background: transparent;
+}
+.categories-button:active{
+    color:#000;
+    font-weight: bold;
+}
+@keyframes glowing{
+    0%{background-position:0 0;}
+    50%{background-position:400% 0;}
+    100%{background-position:0 0;}
+}
+@media(max-width:750px){
+    .categories-button{
+        min-height: 60px;
+        font-size: 1rem;
+    }
+}
