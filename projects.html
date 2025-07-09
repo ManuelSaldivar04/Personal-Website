@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/projects.css">
+    <title>Projects</title>
+</head>
+<body>
+    <!-- Decorative background elements -->
+    <div class="decoration circle"></div>
+    <div class="decoration triangle"></div>
+    <div class="decoration square"></div>
+    
+    <div class="content-wrapper">
+        <p class="title-page">My Projects</p>
+        
+        <div class="projects-container">
+            <div class="project-container">
+                <h2>StickMan Math</h2>
+                <p>Educational Math Game to Help Children Learn Basic Arithmetic</p>
+                
+                <div class="project-container-info">
+                    <div class="project-container-info-image">
+                        <img src="project images/StickMan Math 1.png" alt="Math game screenshot">
+                    </div>
+                    <div>
+                        <h3>Description</h3>
+                        <p>
+                            StickMan Math was created by me and a few friends of mine at <a href="https://www.uwo.ca/index.html" target="_blank">University</a>
+                            for a semester-long project class. The goal of the project was to create
+                            an educational/helpful game or tool for the public to use. We decided to create a
+                            Pokémon/Mario style adventure game to teach children in a fun and educational manner
+                            the 4 basic arithmetic skills.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3>Features</h3>
+                        <p>
+                            The game is designed in an advance-by-progress style, ensuring players master the 
+                            previous levels before reaching the next. Each "world" targets one of the 4 principle 
+                            arithmetic operations. Players can purchase items in the shop with gold earned by 
+                            defeating bosses. Items help players advance through levels, rewarding good performance.
+                        </p>
+                    </div>
+                    
+                    <div class="project-container-info-multi-image">
+                        <img src="project images/StickMan Math 2.png" alt="Game screenshot 1">
+                        <img src="project images/StickMan Math 3.png" alt="Game screenshot 2">
+                        <img src="project images/StickMan Math 4.png" alt="Game screenshot 3">
+                        <img src="project images/StickMan Math 5.png" alt="Game screenshot 4">
+                    </div>
+                    
+                    <div class="project-container-info-multi-image">
+                        <img src="project images/StickMan Math 6.png" alt="Game screenshot 5">
+                        <img src="project images/StickMan Math 7.png" alt="Game screenshot 6">
+                        <img src="project images/StickMan Math 8.png" alt="Game screenshot 7">
+                        <img src="project images/StickMan Math 9.png" alt="Game screenshot 8">
+                    </div>
+                    
+                    <div>
+                        <p style="margin-left: 20px;">
+                            To defeat each level's boss, players must answer math problems correctly within a time limit 
+                            to deal damage to the enemy. Incorrect answers reduce the player's health. If the player
+                            loses all health before the enemy, they lose the match and cannot advance. 
+                            Upon defeating an enemy, players receive gold and advance to the next level.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="project-container">
+                <h2>Book Reading Organizer</h2>
+                <p>App to Organize Books Read and Books Wishing to Read</p>
+                
+                <div class="project-container-info">
+                    <div class="project-container-info-image">
+                        <img src="project images/Book Reading Organizer1.png" alt="Math game screenshot">
+                    </div>
+                    <div>
+                        <h3>Description</h3>
+                        <p>
+                            Developed a C++ book organizer application at <a href="https://www.uwo.ca/index.html" target="_blank"> Western University</a>
+                            to master <strong>Object-Oriented Design &amp; Analysis (OODA)</strong> principles. Prioritized architectual
+                            scalability and maintainability over UI, implementing core functionality for managing books, reviews, and ratings 
+                            within a rigorously modeled domain. Applied OODA methodology end-to-end from UML diagrams to implementation, to ensure a clean,
+                            entensible foundation.
+                            
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3>Features & OODA Implementation</h3>
+                        <p>
+                            &#8226; <strong>Domain Modeling via UML Class Diagrams</strong>: Established object relationships including Book-Review aggregation (1-to-many composition) and User-List associations with strict encapsulation
+                        </p>
+                        <p>
+                            &#8226; <strong>Workflow Validation with Sequence Diagrams</strong>: Modeled critical operations like "Move Book Between Lists" and "Add Review" to ensure SOLID-compliant interactions
+                        </p>
+                        <p>
+                            &#8226; <strong>Use Case-Driven Development</strong>: Formalized 10+ scenarios including priority-based sorting and wish list management with preconditions/exception handling
+                        </p>
+                    </div>
+                    
+                    <div class="project-container-info-image">
+                        <img src="project images/Book Reading Organizer2.png" alt="">
+                    </div>
+                    
+                    <div class="project-container-info-double-image">
+                        <img src="project images/Book Reading Organizer Use Case Diagram1.png" alt="">
+                        <img src="project images/Book Reading Organizer Use Case Diagram2.png" alt="">
+                    </div>
+                    
+                    <div>
+                        <h3>Design Patterns</h3>
+                        <p style="margin-left: 20px;">
+                            &#8226; <strong>Factory Method Pattern</strong>: Implemented to handle the creation of different
+                            types of reviews (book review, author review..). This ensures that the system can easily accommodate
+                            additional review types in the future without modifying the core logic.
+                            <ul style="margin-top:0; margin-bottom:0;margin-left:20px;">
+                                <li>Encourages adherence to the Open Closed principle</li>
+                                <li>Makes the code more maintainable and readable, as review creation logic is centralized in one place</li>
+                            </ul>
+                        </p>
+                        <p style="margin-left:20px;">
+                            &#8226; <strong>Strategy Pattern</strong>: Implemented to allow dynamic selection of sorting algorithms
+                             (by title or author). This makes the sorting logic extensible and modular. Instead of hardcoding sorting
+                             logic, the pattern allows swapping algorithms at runtime depending on user preferences or system requirements.
+                             <ul style="margin-top:0; margin-bottom:0;margin-left:20px;">
+                                <li>Encourages modularity by encapsulating each sorting logic into seperate, reusable classes</li>
+                                <li>Single-Responsibility Principle</li>
+                            </ul>
+                        </p>
+                        
+                    </div>
+                    <div class="pdf-viewer-container">
+                        <div class="pdf-toggle" id="pdfToggle">
+                            View Complete UML Diagrams
+                        </div>
+                        <div class="pdf-iframe-container" id="pdfIframeContainer">
+                            <iframe
+                            src="project images/Complete UML Diagrams.pdf" 
+                            style="Width:100%; height: 975px;grid-column: 1 / -1;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;"
+                            frameborder="0">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple animation for decorative elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const decorations = document.querySelectorAll('.decoration');
+            
+            decorations.forEach((dec, index) => {
+                // Randomize starting position
+                const randomTop = 5 + Math.random() * 80;
+                const randomLeft = 5 + Math.random() * 80;
+                dec.style.top = `${randomTop}%`;
+                dec.style.left = `${randomLeft}%`;
+                
+                // Animate movement
+                setInterval(() => {
+                    const currentTop = parseFloat(dec.style.top);
+                    const currentLeft = parseFloat(dec.style.left);
+                    
+                    const newTop = currentTop + (Math.random() - 0.5);
+                    const newLeft = currentLeft + (Math.random() - 0.5);
+                    
+                    // Keep within viewport bounds
+                    if (newTop > 5 && newTop < 85) {
+                        dec.style.top = `${newTop}%`;
+                    }
+                    if (newLeft > 5 && newLeft < 85) {
+                        dec.style.left = `${newLeft}%`;
+                    }
+                }, 3000 + Math.random() * 2000);
+            });
+
+         // PDF Viewer Toggle
+         const pdfToggle = document.getElementById('pdfToggle');
+            const pdfContainer = document.getElementById('pdfIframeContainer');
+            
+            pdfToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                pdfContainer.classList.toggle('active');
+                
+                // Scroll to the PDF when opened
+                if (pdfContainer.classList.contains('active')) {
+                    setTimeout(() => {
+                        pdfContainer.scrollIntoView({ behavior: 'smooth' });
+                    }, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

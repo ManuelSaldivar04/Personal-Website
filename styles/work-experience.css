@@ -1,0 +1,111 @@
+body{
+    margin: 0;
+    padding: 20px;
+    font-size:clamp(1rem,1.2vw,1.2rem);
+    line-height: 1.6;
+    background-color: black;
+    color: white;
+    background: linear-gradient(45deg, #e1031d, #3628a1, #f3a34d, #068164);
+    background-size: 300% 300%;
+    animation: color 12s ease-in-out infinite;
+}
+@keyframes color {
+    0% { background-position: 0 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+.header-container{
+    display: flex;
+    justify-content: center;
+    font-size: clamp(2rem,5vw,3rem);
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+}
+.jobs-container{
+    display: grid;
+    grid-template-rows: 1fr;
+    position: relative;
+    background: #1c1f2b;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(5px);
+    /*new stuff*/
+    padding: 2em;
+}
+@property --angle{
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+.job-container{
+    
+    display:flex;
+    color:black;
+    padding:1.5rem;
+    color: white;
+    gap:1.5rem;
+    justify-content: space-between;
+    background-color: white;
+    background: rgba(0,0,0,0.2);
+    margin-bottom: 10%;
+    border-radius: 7px;
+}
+.job-container:hover{
+    transform: scale(1.02);
+}
+.left-side p{
+    display: block;
+    margin:0.5rem 0;
+    font-size:clamp(1rem,1.1vw,1.1rem);
+}
+.left-side strong{
+    font-size: clamp(1.1rem,1.3vw,1.3rem);
+}
+.left-side{
+   
+    flex:1;
+    padding: 1rem;
+}
+.left-side img{
+    width: clamp(80px,10vw,120px);
+    height: auto;
+    margin-top:1rem;
+}
+.middle-side{
+    display: inline-block;
+    flex:2;
+    font-size: clamp(1rem,1.2vw,1.2rem);
+    
+}
+.right-side{
+    display: flex;
+    align-items: top;
+    justify-content: flex-end;
+    flex:0.8;
+    font-size: clamp(0.9rem,1.1vw,1.1rem);
+    padding: 10px;
+    white-space: nowrap;
+    text-align: right;
+    
+}
+@media(max-width:750px){
+    .job-container{
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .right-side{
+        text-align: left;
+        flex:none;
+        width: 100%;
+        white-space: normal;
+        justify-content: flex-start;
+    }
+    body{
+        font-size: clamp(0.9rem,3vw,1rem);
+    }
+    .left-side img{
+        width: clamp(60px,15vw,100px);
+    }
+}

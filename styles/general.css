@@ -1,0 +1,9 @@
+body{
+    height: auto;
+    margin: 0px;
+    margin-top: 41px;
+}
+html{
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
