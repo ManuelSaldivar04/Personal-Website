@@ -37,9 +37,33 @@ function make2DArray(cols, rows) {
 
 //the needed setup initialization
 function setup() {
-    createCanvas(400, 400); // Create a 400 by 400 canvas to draw onto
+    //const canvas = createCanvas(400, 400); // Create a 400 by 400 canvas to draw onto
+
+    /*======NEW FROM HERE TO BELOW====== */
+    const container = document.getElementById('game-canvas-container');
+
+    //use the containers actual dimensions
+    const canvas = createCanvas(400,400);
+
+    //center the canvas in the container
+    canvas.elt.style.width = '400px';
+    canvas.elt.style.height = '400px';
+    canvas.elt.style.maxWidth = '400px';
+    canvas.elt.style.maxHeight = '400px';
+    canvas.elt.style.minWidth = '400px';
+    canvas.elt.style.minHeight = '400px';
+    canvas.elt.style.display = 'block';
+    canvas.elt.style.margin = '0';
+    canvas.elt.style.padding = '0';
+    
+    canvas.parent('game-canvas-container');
+    /*=====ALL THIS ABOVE IS NEW======= */
+
+    //createCanvas(400, 400).mousePressed(canvasMousePressed); // Create a 400 by 400 canvas to draw onto
+
     cols = width / SQUARE_SIZE;// cols = 400 / SQUARE_SIZE
     rows = height / SQUARE_SIZE;// rows = 400 / SQUARE_SIZE
+
     grid = make2DArray(cols, rows);
     nextGrid = make2DArray(cols, rows);
 
@@ -50,6 +74,31 @@ function setup() {
     drawGrid();
     population = countPopulation();
     updatePopulationDisplay(); 
+
+    window.addEventListener('resize',windowResized);
+    
+}
+
+//function to adjust canvas to window size
+function windowResized() {
+    const container = document.getElementById('game-canvas-container');
+    resizeCanvas(container.offsetWidth, container.offsetHeight);
+    
+    // Recalculate cols and rows
+    cols = Math.floor(width / SQUARE_SIZE);
+    rows = Math.floor(height / SQUARE_SIZE);
+    
+    // Recreate arrays with new dimensions
+    grid = make2DArray(cols, rows);
+    nextGrid = make2DArray(cols, rows);
+    
+    // Redraw grid lines
+    gridGraphics = createGraphics(width, height);
+    drawGridLines(gridGraphics);
+    
+    // Clear live cells since dimensions changed
+    LiveCells.clear();
+    drawGrid();
 }
 
 function drawGridLines(buffer){
@@ -92,9 +141,32 @@ function drawResetGrid(){
 }
 //mouse clicked function
 function mousePressed(){
+    if(mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height){
+        return;//click was outside the canvas do nothing
+    }
     if(canPress){
-        let col = floor(mouseX / SQUARE_SIZE); //used to be row
-        let row = floor(mouseY / SQUARE_SIZE);//used to be col
+        //get the actual canvas element
+        const canvas = document.querySelector('canvas');
+        const rect = canvas.getBoundingClientRect();
+
+        //get the scaling factor
+        const scaleX = canvas.width / rect.width; //400 / actual display width
+        const scaleY = canvas.height / rect.height;
+
+        //conver mouse coordinates to canvas pixel coordinates
+        const canvasX = mouseX * scaleX;
+        const canvasY = mouseY* scaleY;
+
+        //now calculate grid cell
+        let col = floor(canvasX / SQUARE_SIZE);
+        let row = floor(canvasY / SQUARE_SIZE);
+
+        col = constrain(col,0,cols-1);
+        row = constrain(row,0,rows-1);
+
+
+        // let col = floor(mouseX / SQUARE_SIZE); //used to be row
+        // let row = floor(mouseY / SQUARE_SIZE);//used to be col
         let key = JSON.stringify([col,row]);
 
         if(grid[col][row] === 0){
@@ -117,6 +189,31 @@ function mousePressed(){
         drawGrid();
     } 
 }
+
+function constrain(value,min,max){
+    return Math.max(min,Math.min(max,value));
+}
+
+function checkSizes() {
+    const container = document.getElementById('game-canvas-container');
+    const canvas = document.querySelector('canvas');
+    const rect = canvas.getBoundingClientRect();
+    
+    console.log('Container computed style:', {
+        width: getComputedStyle(container).width,
+        height: getComputedStyle(container).height
+    });
+    
+    console.log('Canvas:', {
+        width: canvas.width,
+        height: canvas.height,
+        styleWidth: canvas.style.width,
+        styleHeight: canvas.style.height,
+        rectWidth: rect.width,
+        rectHeight: rect.height
+    });
+}
+
 
 //when the start button is clicked, the function will initialize
 function startGame(){
