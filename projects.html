@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles/projects.css">
     <title>Projects</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
 <body>
     <!-- Decorative background elements -->
@@ -149,6 +150,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- ALL THIS IS NEW AND NEEDS TO GET FIXED BEFORE PUSHED TO MAIN-->
+            <div class="project-container">
+                <h2>Conway's Game of Life</h2>
+                <p>V2 implementation of the Game of Life</p>
+                <div class="project-container-info">
+                    <button onclick="startGame()">Start</button>
+                    <button onclick="pauseGame()">Pause</button>
+                    <button onclick="resetGame()">Reset</button>
+                    <h1>Generation: <span id="dynamic-generation"></span></h1>
+                    <h1>Population: <span id="dynamic-population"></span></h1>
+                    <!-- Put javascript at the end of the body, so that all html and css can load before needing to wait on js-->
+                    <script src="JavaScripts/ConwayV2.js"></script>
+                </div>
+            <!--ALL THIS FROM ABOVE IS NEW AND NEEDS TO GET FIXED BEFORE PUSHED TO MAIN-->
             </div>
         </div>
     </div>
