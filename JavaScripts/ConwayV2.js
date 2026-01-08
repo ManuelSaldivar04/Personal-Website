@@ -4,7 +4,7 @@ let generation = 0;//represent the current generation
 let LiveNeighbours;
 let grid;//the current generation grid representation
 let nextGrid; //the next generation grid representation
-const SQUARE_SIZE = 8;
+const SQUARE_SIZE = 10;
 let cols,rows;
 let state;
 let canPress = true;//FLAG to allow user to press mouse 
@@ -45,6 +45,8 @@ function setup() {
     //use the containers actual dimensions
     const canvas = createCanvas(400,400);
 
+    pixelDensity(1);
+
     //center the canvas in the container
     canvas.elt.style.width = '400px';
     canvas.elt.style.height = '400px';
@@ -55,6 +57,9 @@ function setup() {
     canvas.elt.style.display = 'block';
     canvas.elt.style.margin = '0';
     canvas.elt.style.padding = '0';
+
+    canvas.elt.width = 400;
+    canvas.elt.height = 400;
     
     canvas.parent('game-canvas-container');
     /*=====ALL THIS ABOVE IS NEW======= */
@@ -75,30 +80,23 @@ function setup() {
     population = countPopulation();
     updatePopulationDisplay(); 
 
-    window.addEventListener('resize',windowResized);
+    setTimeout(() => {
+        const canvas = document.querySelector('canvas');
+        const rect = canvas.getBoundingClientRect();
+        console.log('=== CANVAS DEBUG ===');
+        console.log('Canvas internal size:', canvas.width, 'x', canvas.height);
+        console.log('Canvas displayed size (rect):', rect.width, 'x', rect.height);
+        console.log('Device pixel ratio:', window.devicePixelRatio);
+        console.log('SQUARE_SIZE:', SQUARE_SIZE);
+        console.log('Grid dimensions:', cols, 'x', rows);
+        
+        // Check if canvas is being scaled
+        if (rect.width !== 400 || rect.height !== 400) {
+            console.warn('WARNING: Canvas is being displayed at', rect.width, 'x', rect.height, 'instead of 400x400');
+            console.warn('Scaling factor:', rect.width/400, 'x', rect.height/400);
+        }
+    }, 100);
     
-}
-
-//function to adjust canvas to window size
-function windowResized() {
-    const container = document.getElementById('game-canvas-container');
-    resizeCanvas(container.offsetWidth, container.offsetHeight);
-    
-    // Recalculate cols and rows
-    cols = Math.floor(width / SQUARE_SIZE);
-    rows = Math.floor(height / SQUARE_SIZE);
-    
-    // Recreate arrays with new dimensions
-    grid = make2DArray(cols, rows);
-    nextGrid = make2DArray(cols, rows);
-    
-    // Redraw grid lines
-    gridGraphics = createGraphics(width, height);
-    drawGridLines(gridGraphics);
-    
-    // Clear live cells since dimensions changed
-    LiveCells.clear();
-    drawGrid();
 }
 
 function drawGridLines(buffer){
@@ -142,16 +140,19 @@ function drawResetGrid(){
 //mouse clicked function
 function mousePressed(){
     if(mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height){
-        return;//click was outside the canvas do nothing
+        return;//click was outside the canvas do
     }
     if(canPress){
+        
         //get the actual canvas element
         const canvas = document.querySelector('canvas');
         const rect = canvas.getBoundingClientRect();
 
+        //get the device pixel ratio
+        const dpr = window.devicePixelRatio || 1;
         //get the scaling factor
-        const scaleX = canvas.width / rect.width; //400 / actual display width
-        const scaleY = canvas.height / rect.height;
+        const scaleX = canvas.width / (rect.width * dpr); //400 / actual display width
+        const scaleY = canvas.height / (rect.height * dpr);
 
         //conver mouse coordinates to canvas pixel coordinates
         const canvasX = mouseX * scaleX;
@@ -160,13 +161,13 @@ function mousePressed(){
         //now calculate grid cell
         let col = floor(canvasX / SQUARE_SIZE);
         let row = floor(canvasY / SQUARE_SIZE);
+        
+    //    let col = floor(mouseX / SQUARE_SIZE);
+    //    let row = floor (mouseY / SQUARE_SIZE);
 
         col = constrain(col,0,cols-1);
         row = constrain(row,0,rows-1);
 
-
-        // let col = floor(mouseX / SQUARE_SIZE); //used to be row
-        // let row = floor(mouseY / SQUARE_SIZE);//used to be col
         let key = JSON.stringify([col,row]);
 
         if(grid[col][row] === 0){
@@ -187,6 +188,12 @@ function mousePressed(){
         updatePopulationDisplay();
         //redraw grid
         drawGrid();
+
+        /* ====DEBUGGING */
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        console.log(`viewport width:${viewportWidth}px, viewport height:${viewportHeight}px, DPR:${dpr}`);
     } 
 }
 
