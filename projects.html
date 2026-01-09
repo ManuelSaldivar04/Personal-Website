@@ -331,6 +331,13 @@
                             The initial pattern constitutes the seed of the system. The first generation is created by applying the above rules simultaneously
                             to every cell in the seed, live or dead; <i>births</i> and <i>deaths</i> occur simultaneously. Each generation is a pure function.
                         </p>
+                        <p>
+                            In this V2 implementation, I stored all the live cells into a set, stringifying them to JSON in order to get [row,col] unique pairs.
+                            Using a set drastically increased performance, as we only need to check these few live cells in O(n) worst case time complexity.
+                            Set also has advantages with low time complexity such as clearing the set and getting the set size, to determine the <i>population</i>.
+                            In V1, the INP score was extremely poor, around 1,200 ms. With this version, I draw a static version of the grid, instead of constantly redrawing 
+                            grid and it's cells.
+                        </p>
                     </div>
                     <div class="game-controls">
                         <div class="controls">

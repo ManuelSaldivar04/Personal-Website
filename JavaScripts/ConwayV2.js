@@ -398,26 +398,26 @@ window.addEventListener('load', () => {
         if(typeof setup === 'function') {
             setup();
             
-            // Add test pattern
-            setTimeout(() => {
-                console.log("Adding test pattern...");
+            // // Add test pattern
+            // setTimeout(() => {
+            //     console.log("Adding test pattern...");
                 
-                const testPattern = [
-                    [1, 0], [2, 1], [0, 2], [1, 2], [2, 2]
-                ];
+            //     const testPattern = [
+            //         [1, 0], [2, 1], [0, 2], [1, 2], [2, 2]
+            //     ];
                 
-                testPattern.forEach(([col, row]) => {
-                    if(col < cols && row < rows) {
-                        grid[col][row] = 1;
-                        LiveCells.add(JSON.stringify([col, row]));
-                    }
-                });
+            //     testPattern.forEach(([col, row]) => {
+            //         if(col < cols && row < rows) {
+            //             grid[col][row] = 1;
+            //             LiveCells.add(JSON.stringify([col, row]));
+            //         }
+            //     });
                 
-                population = LiveCells.size;
-                updatePopulationDisplay();
+            //     population = LiveCells.size;
+            //     updatePopulationDisplay();
                 
-                console.log("Test pattern added. You should see a glider pattern.");
-            }, 500);
+            //     console.log("Test pattern added. You should see a glider pattern.");
+            // }, 500);
         }
     }, 100);
 });
