@@ -9,10 +9,10 @@ let cols = GRID_SIZE, rows = GRID_SIZE;
 let canPress = true;
 let intervalID = null;
 let timeoutID = null;
-const duration = 120000;
-const NEIGHBOURS = [ 
+const duration = 120000; //2 minute duration
+const NEIGHBOURS = [  //all 8 neighbours of the cell
     [-1,-1],[-1,0],[-1,1],
-    [0,-1],[0,1],
+    [0,-1],         [0,1],
     [1,-1],[1,0],[1,1]
 ];
 const LiveCells = new Set();
@@ -21,8 +21,7 @@ let canvasElement;
 //====SETUP & INITIALIZATION=====
 
 function setup() {
-    console.log("Setting up Conway's Game of Life");
-
+    
     const container = document.getElementById('game-canvas-container');
     container.innerHTML = '';
 
@@ -33,8 +32,6 @@ function setup() {
     cellSize = Math.max(4, Math.floor(availableSize / GRID_SIZE));
     const canvasSize = cellSize * GRID_SIZE;
     
-    console.log(`Canvas: ${canvasSize}x${canvasSize}, Cell: ${cellSize}px, Grid: ${GRID_SIZE}x${GRID_SIZE}`);
-
     const canvas = createCanvas(canvasSize, canvasSize);
     canvasElement = canvas.elt;
 
@@ -105,6 +102,14 @@ function updateGenerationDisplay(){
     if (element) element.textContent = generation;
 }
 
+function enableMousePress(){
+    canPress = true;
+}
+
+function disableMousePress(){
+    canPress = false;
+}
+
 //======MOUSE HANDLING=======
 
 //mouse clicked function
@@ -116,38 +121,9 @@ function mousePressed(){
     //if cant press then return
     if(!canPress)return; 
         
-        //get the actual canvas element
-        const canvas = document.querySelector('canvas');
-        const rect = canvas.getBoundingClientRect();
-
-        //get the device pixel ratio
-        const dpr = window.devicePixelRatio || 1;
-        //get the scaling factor
-         const scaleX = canvas.width / (rect.width * dpr); //400 / actual display width
-         const scaleY = canvas.height / (rect.height * dpr);
-        const scaleXo = canvas.width / rect.width;
-        const scaleYo = canvas.height / rect.height;
-
-        //conver mouse coordinates to canvas pixel coordinates
-        const canvasX = mouseX * scaleXo;//scaleX;
-        const canvasY = mouseY* scaleYo;//scaleY;
-
         //now calculate grid cell
-        // let col = floor(canvasX / cellSize);
-        // let row = floor(canvasY / cellSize);
         let col = Math.round(mouseX / cellSize);
         let row = Math.round(mouseY / cellSize);
-        const rawX = event.clientX - rect.left;
-        const rawY = event.clientY - rect.top;
-
-        //let col = Math.floor(rawX / cellSize);
-        //let row = Math.floor(rawY / cellSize);
-        
-    //    let col = floor(mouseX / SQUARE_SIZE);
-    //    let row = floor (mouseY / SQUARE_SIZE);
-
-        //col = constrain(col,0,cols-1);
-        //row = constrain(row,0,rows-1);
 
         let key = JSON.stringify([col,row]);
 
@@ -156,33 +132,14 @@ function mousePressed(){
             //add to set
             if(!LiveCells.has(key)){
                 LiveCells.add(key);
-                console.log("Added to Set: Row: "+row+" col: "+col);
-                console.log(`The cell size is: ${cellSize} and DPR ${dpr}`);
-                console.log(`original scaleX: ${canvas.width} / ${rect.width}*${dpr} = ${scaleX}`);
-                console.log(`original scaleY: ${canvas.height} / ${rect.height}*${dpr} = ${scaleY}`);
-                console.log(`new scaleX:${scaleXo}`);
-                console.log(`new scaleY:${scaleYo}`);
-                console.log(`canvasX = ${mouseX} * ${scaleX}`);
-                console.log(`canvasY = ${mouseY} * ${scaleY}`);
-
             }
         }else{
             grid[col][row] = 0;
             //remove from set
             LiveCells.delete(key);
-            console.log("Removed from Set: Row: "+row+" col: "+col);
         }
         population = countPopulation();
         updatePopulationDisplay();
-        //redraw grid
-        //drawGrid();
-
-        /* ====DEBUGGING */
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        console.log(`viewport width:${viewportWidth}px, viewport height:${viewportHeight}px, DPR:${dpr}`);
-     
 }
 
 //======DRAW FUNCTION=======
@@ -220,8 +177,7 @@ function draw() {
 
 function startGame(){
     if(intervalID === null){
-        console.log("Starting game...");
-        canPress = false;
+        disableMousePress();
         
         intervalID = setInterval(() => {
             // Get all cells to check (live cells and their neighbors)
@@ -290,14 +246,13 @@ function startGame(){
             
         }, 100); // 100ms = 10 frames per second
 
-        // Auto-stop after duration
+        // Auto-stop after duration to ensure that it doesnt just forever keep going
         timeoutID = setTimeout(() => {
             if(intervalID){
                 clearInterval(intervalID);
                 intervalID = null;
             }
             resetGame();
-            console.log(`Game ended after ${duration/1000} seconds`);
         }, duration);
     }
 }
@@ -313,8 +268,7 @@ function pauseGame(){
         timeoutID = null;
     }
     
-    canPress = true;
-    console.log("Game paused");
+    enableMousePress();
 }
 
 function resetGame(){
@@ -339,7 +293,6 @@ function resetGame(){
     updateGenerationDisplay();
     updatePopulationDisplay();
     
-    console.log("Game reset");
 }
 
 //===== RESPONSIVE HANDLING ======
@@ -390,34 +343,3 @@ function handleResize() {
         updatePopulationDisplay();
     }
 }
-
-//===== INITIALIZATION ======
-
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        if(typeof setup === 'function') {
-            setup();
-            
-            // // Add test pattern
-            // setTimeout(() => {
-            //     console.log("Adding test pattern...");
-                
-            //     const testPattern = [
-            //         [1, 0], [2, 1], [0, 2], [1, 2], [2, 2]
-            //     ];
-                
-            //     testPattern.forEach(([col, row]) => {
-            //         if(col < cols && row < rows) {
-            //             grid[col][row] = 1;
-            //             LiveCells.add(JSON.stringify([col, row]));
-            //         }
-            //     });
-                
-            //     population = LiveCells.size;
-            //     updatePopulationDisplay();
-                
-            //     console.log("Test pattern added. You should see a glider pattern.");
-            // }, 500);
-        }
-    }, 100);
-});

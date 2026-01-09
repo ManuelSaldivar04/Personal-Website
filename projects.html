@@ -6,150 +6,7 @@
     <link rel="stylesheet" href="styles/projects.css">
     <title>Projects</title>
     <style>
-        /*
-        #game-canvas-container {
-            width: 400px;
-            height: 400px;
-            position: relative;
-            display: block;
-            margin: 0;
-            padding: 0;
-            border: 0;
-            box-sizing: border-box;
-            line-height: 0;
-
-            
-            background-color: rgba(255,0,0,0,0.1);
-           
-            min-width: 400px;
-            max-width: 400px;
-            min-height: 400px;
-            max-height: 400px;
-            
-            overflow: hidden;
-        }
-
-        #game-canvas-container canvas {
-            
-            width: 400px;
-            height: 400px;
-            min-width: 400px;
-            min-height: 400px;
-            max-width: 400px;
-            max-height: 400px;
-            transform: none;
-            image-rendering: pixelated;
-            
-            position: static;
-            top: auto ;
-            left: auto ;
-            display: block;
-            margin: 0;
-            padding: 0;
-            border: none;
-        }
-        #game-controls{
-            width:auto;
-            min-width: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-            */
-        /* Responsive game controls */
-    .game-controls {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-    }
     
-    .controls {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        align-items: center;
-        width: 100%;
-    }
-    
-    .controls button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        cursor: pointer;
-        min-width: 80px;
-    }
-    
-    .controls h1 {
-        font-size: clamp(1rem, 2.5vw, 1.3rem);
-        margin: 0;
-        white-space: nowrap;
-    }
-    
-    /* Responsive canvas container */
-    .canvas-wrapper {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-        aspect-ratio: 1 / 1; /* Makes it square */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: black;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    
-    #game-canvas-container {
-        width: 100% !important;
-        height: 100% !important;
-        display: block !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box !important;
-    }
-     
-    
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
-        .game-controls {
-            gap: 15px;
-        }
-        
-        .controls {
-            gap: 10px;
-        }
-        
-        .controls button {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-        
-        .canvas-wrapper {
-            max-width: 95vw;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .controls {
-            flex-direction: column;
-        }
-        
-        .controls button {
-            width: 90%;
-            max-width: 200px;
-        }
-        
-        .canvas-wrapper {
-            max-width: 100vw;
-            border-radius: 0;
-        }
-    }
-        
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
@@ -297,7 +154,6 @@
                     </div>
                 </div>
             </div>
-            <!-- ALL THIS IS NEW AND NEEDS TO GET FIXED BEFORE PUSHED TO MAIN-->
             <div class="project-container">
                 <h2>Conway's Game of Life</h2>
                 <p style="display:inline-block;">V2 implementation of the Game of Life</p>
@@ -305,7 +161,7 @@
                     <div>
                         <h3>Description:</h3>
                         <p>
-                            The Game of Life is a cellular automaton devised by british mathematician John Horton Conway in 1970. 
+                            The Game of Life is a cellular automaton devised by british mathematician <a href="https://en.wikipedia.org/wiki/John_Horton_Conway" target="_blank">John Horton Conway</a> in 1970. 
                             It is a <strong>zero-player</strong> game, meaning that it's evolution is determined by it's initial
                             state, requiring no further input. One interacts with the Game of Life by creating an initial configuration
                             and observing how it evolves in discrete time steps called <i>generations</i>. There is <strong>no limit</strong>
@@ -319,7 +175,7 @@
                             has two possible states, <strong>live</strong> or <strong>dead</strong>. Every cell interacts with it's <strong>eight</strong>
                             neighbours, which are <strong>horizontal</strong>, <strong>vertical</strong>, or <strong>diagonally</strong> adjacent.
                         </p>
-                        <ul>
+                        <ul class="game-of-life-rules">
                             <li>Any live cell with fewer than <strong>two</strong> live neighbours <strong>dies</strong>, as if by underpopulation</li>
                             <li>Any live cell with <strong>two</strong> or <strong>three</strong> live neighbours <strong>lives</strong> on to the next generation</li>
                             <li>Any live cell with <strong>more</strong> than <strong>three</strong> live neighbours <strong>dies</strong>, as if by overpopulation</li>
@@ -332,11 +188,19 @@
                             to every cell in the seed, live or dead; <i>births</i> and <i>deaths</i> occur simultaneously. Each generation is a pure function.
                         </p>
                         <p>
-                            In this V2 implementation, I stored all the live cells into a set, stringifying them to JSON in order to get [row,col] unique pairs.
-                            Using a set drastically increased performance, as we only need to check these few live cells in O(n) worst case time complexity.
-                            Set also has advantages with low time complexity such as clearing the set and getting the set size, to determine the <i>population</i>.
-                            In V1, the INP score was extremely poor, around 1,200 ms. With this version, I draw a static version of the grid, instead of constantly redrawing 
-                            grid and it's cells.
+                            In the V2 implementation, all live cells are stored within a Set, where each cell is represented as a JSON-stringified [row,col]
+                            pair to ensure uniqueness. This data structure choice significantly improves performance by restricting computation to only the active (live)
+                            cells, resulting in a worst-case time complexity of <strong>O(n)</strong> with respect to the number of live cells, rather than the total number
+                            of grid cells.
+                        </p>
+                        <p>
+                            The use of a Set also provides efficient constant-time operations for insertion, deletion, clearing, and size retrieval. These properties
+                            facilitate effective population tracking and contribute to overall performance improvements.
+                        </p>
+                        <p>
+                            In contrast, the V1 implementation exhibited poor performace, with an <a href="https://web.dev/articles/inp?utm_source=devtools&utm_campaign=stable" target="_blank">INP</a> 
+                            score of approximately <strong>1,200 ms</strong>. The V2 approach mitigates this issue by rendering the grid statically and updating only the necessary cell states,
+                            rather than repeatedly redrawing the entire grid and its cells each frame. This optimization results in a substantial reduction in rendering overhead and improved execution efficiency.
                         </p>
                     </div>
                     <div class="game-controls">
@@ -347,7 +211,6 @@
                             <h1>Generation: <span id="dynamic-generation"></span></h1>
                             <h1>Population: <span id="dynamic-population"></span></h1>
                         </div>
-                        <!--ADD A CONTAINER FOR THE CANVAS-->
                         <div class="canvas-wrapper">
                             <div id="game-canvas-container"></div>
                         </div>
@@ -355,7 +218,6 @@
                     <!-- Put javascript at the end of the body, so that all html and css can load before needing to wait on js-->
                     <script src="JavaScripts/ConwayV2.js"></script>
                 </div>
-            <!--ALL THIS FROM ABOVE IS NEW AND NEEDS TO GET FIXED BEFORE PUSHED TO MAIN-->
             </div>
         </div>
     </div>
