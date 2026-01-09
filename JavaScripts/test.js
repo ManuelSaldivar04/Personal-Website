@@ -3,24 +3,122 @@ let population = 0;
 let generation = 0;
 let grid;
 let nextGrid;
-let cellSize; // Dynamically calculated based on screen size
-const GRID_SIZE = 30; // Fixed 30x30 grid on ALL devices
+let cellSize = 10; // Default, will adjust based on screen
+const GRID_SIZE = 30; // Fixed 30x30 grid on all devices
 let cols = GRID_SIZE, rows = GRID_SIZE;
 let canPress = true;
 let intervalID = null;
 let timeoutID = null;
-const duration = 120000; // 2 minutes
-let gridGraphics;
+const duration = 120000;
 const NEIGHBOURS = [ 
     [-1,-1],[-1,0],[-1,1],
     [0,-1],[0,1],
     [1,-1],[1,0],[1,1]
 ];
 const LiveCells = new Set();
+let canvasElement; // Reference to the canvas DOM element
+
+//===== SETUP & INITIALIZATION ======
+
+function setup() {
+    console.log("Setting up Conway's Game of Life");
+    
+    // Get container
+    const container = document.getElementById('game-canvas-container');
+    
+    // Clear any existing content
+    container.innerHTML = '';
+    
+    // Get available space
+    const containerWidth = container.clientWidth || 400;
+    const containerHeight = container.clientHeight || 400;
+    const availableSize = Math.min(containerWidth, containerHeight);
+    
+    // Calculate cell size (minimum 4px for visibility)
+    cellSize = Math.max(4, Math.floor(availableSize / GRID_SIZE));
+    const canvasSize = cellSize * GRID_SIZE;
+    
+    console.log(`Canvas size: ${canvasSize}x${canvasSize}, Cell size: ${cellSize}px, Grid: ${GRID_SIZE}x${GRID_SIZE}`);
+    
+    // Create canvas with exact pixel dimensions
+    const canvas = createCanvas(canvasSize, canvasSize);
+    canvasElement = canvas.elt; // Store reference to DOM element
+    
+    // Set canvas element attributes directly
+    canvasElement.width = canvasSize;
+    canvasElement.height = canvasSize;
+    
+    // Set canvas styles to prevent any scaling
+    canvasElement.style.cssText = `
+        width: ${canvasSize}px !important;
+        height: ${canvasSize}px !important;
+        min-width: ${canvasSize}px !important;
+        min-height: ${canvasSize}px !important;
+        max-width: ${canvasSize}px !important;
+        max-height: ${canvasSize}px !important;
+        display: block !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        border: none !important;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        transform: none !important;
+        position: static !important;
+        background-color: black;
+    `;
+    
+    canvas.parent('game-canvas-container');
+    
+    // Initialize grids
+    grid = make2DArray(cols, rows);
+    nextGrid = make2DArray(cols, rows);
+    
+    // Draw initial grid
+    drawGrid();
+    
+    // Update displays
+    updatePopulationDisplay();
+    updateGenerationDisplay();
+    
+    // Add debug click handler
+    setupDebugClick();
+    
+    // Add resize listener
+    window.addEventListener('resize', handleResize);
+    
+    console.log("Setup complete. Click on cells to toggle them.");
+}
+
+//===== DEBUG FUNCTION ======
+
+function setupDebugClick() {
+    // Add a separate click listener for debugging
+    canvasElement.addEventListener('click', function(event) {
+        const rect = canvasElement.getBoundingClientRect();
+        
+        console.log('=== DEBUG CLICK INFO ===');
+        console.log('Canvas internal size:', canvasElement.width, 'x', canvasElement.height);
+        console.log('Canvas displayed size:', rect.width, 'x', rect.height);
+        console.log('Canvas position (rect):', rect.left, rect.top);
+        console.log('Mouse event position:', event.clientX, event.clientY);
+        console.log('Cell size:', cellSize);
+        console.log('Grid dimensions:', cols, 'x', rows);
+        
+        // Calculate the cell based on event coordinates
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        const col = Math.floor(mouseX / cellSize);
+        const row = Math.floor(mouseY / cellSize);
+        
+        console.log('Calculated cell:', col, row);
+        console.log('Cell boundaries: x=' + (col*cellSize) + '-' + ((col+1)*cellSize) + 
+                    ', y=' + (row*cellSize) + '-' + ((row+1)*cellSize));
+        console.log('========================');
+    });
+}
 
 //===== UTILITY FUNCTIONS ======
 
-// Create a 2D array
 function make2DArray(cols, rows) {
     let arr = new Array(cols);
     for (let i = 0; i < arr.length; i++) {
@@ -29,12 +127,6 @@ function make2DArray(cols, rows) {
     return arr;
 }
 
-// Constrain a value between min and max
-function constrain(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-}
-
-// Count live neighbours for a cell
 function countLiveNeighbours(x, y) {
     let count = 0;
     for (let [dx, dy] of NEIGHBOURS) {
@@ -45,169 +137,39 @@ function countLiveNeighbours(x, y) {
     return count;
 }
 
-// Get toroidal (wrapping) coordinates
 function getToroidalCoordinates(x, y, width, height) {
     let new_x = (x + width) % width;
     let new_y = (y + height) % height;
     return [new_x, new_y];
 }
 
-//===== SETUP & RESIZE HANDLING ======
-
-function setup() {
-    console.log("Setting up responsive Conway's Game of Life");
-    
-    // Get the container
-    const container = document.getElementById('game-canvas-container');
-    
-    // Get parent wrapper to determine available space
-    const wrapper = container.closest('.canvas-wrapper') || container.parentElement;
-    
-    if (!wrapper) {
-        console.error("Could not find canvas wrapper!");
-        // Fallback: create a wrapper
-        const newWrapper = document.createElement('div');
-        newWrapper.className = 'canvas-wrapper';
-        newWrapper.style.cssText = 'width: 100%; max-width: 500px; margin: 0 auto; aspect-ratio: 1/1;';
-        container.parentNode.insertBefore(newWrapper, container);
-        wrapper = newWrapper;
-        wrapper.appendChild(container);
-    }
-    
-    // Calculate initial canvas size
-    const wrapperRect = wrapper.getBoundingClientRect();
-    const availableSize = Math.min(wrapperRect.width, wrapperRect.height);
-    
-    // Calculate cell size (ensure minimum of 4px for visibility)
-    cellSize = Math.max(4, Math.floor(availableSize / GRID_SIZE));
-    const canvasSize = cellSize * GRID_SIZE;
-    
-    console.log(`Initial setup: Available=${Math.round(availableSize)}px, CellSize=${cellSize}px, Canvas=${canvasSize}x${canvasSize}`);
-    
-    // Create canvas
-    const canvas = createCanvas(canvasSize, canvasSize);
-    const canvasEl = canvas.elt;
-    
-    // Set canvas styles
-    canvasEl.style.cssText = `
-        width: 100%;
-        height: 100%;
-        display: block;
-        margin: 0 auto;
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
-    `;
-    
-    canvas.parent('game-canvas-container');
-    
-    // Initialize grids
-    grid = make2DArray(cols, rows);
-    nextGrid = make2DArray(cols, rows);
-    
-    // Create grid graphics buffer
-    gridGraphics = createGraphics(width, height);
-    drawGridLines();
-    
-    // Initial draw
-    background(0);
-    image(gridGraphics, 0, 0);
-    
-    // Update displays
-    updatePopulationDisplay();
-    updateGenerationDisplay();
-    
-    // Add resize listener
-    window.addEventListener('resize', handleResize);
-    
-    // Initial debug
-    console.log(`Setup complete: Grid=${cols}x${rows}, Canvas=${width}x${height}`);
-}
-
-// Handle window resize
-function handleResize() {
-    if (!grid) return;
-    
-    // Get container and wrapper
-    const container = document.getElementById('game-canvas-container');
-    const wrapper = container.closest('.canvas-wrapper') || container.parentElement;
-    
-    if (!wrapper) return;
-    
-    const wrapperRect = wrapper.getBoundingClientRect();
-    const availableSize = Math.min(wrapperRect.width, wrapperRect.height);
-    
-    // Calculate new cell size
-    const newCellSize = Math.max(4, Math.floor(availableSize / GRID_SIZE));
-    const newCanvasSize = newCellSize * GRID_SIZE;
-    
-    // Only resize if cell size changed by at least 1 pixel
-    if (Math.abs(newCellSize - cellSize) >= 1) {
-        console.log(`Resizing: New cell size=${newCellSize}px, Canvas=${newCanvasSize}x${newCanvasSize}`);
-        
-        // Store current live cells (relative positions)
-        const oldLiveCells = Array.from(LiveCells).map(str => JSON.parse(str));
-        
-        // Update cell size and resize canvas
-        cellSize = newCellSize;
-        resizeCanvas(newCanvasSize, newCanvasSize);
-        
-        // Recreate grids (maintain same dimensions)
-        const newGrid = make2DArray(cols, rows);
-        const newNextGrid = make2DArray(cols, rows);
-        
-        // Clear current live cells
-        LiveCells.clear();
-        
-        // Transfer old live cells to new grid
-        oldLiveCells.forEach(([col, row]) => {
-            if (col >= 0 && col < cols && row >= 0 && row < rows) {
-                newGrid[col][row] = 1;
-                LiveCells.add(JSON.stringify([col, row]));
-            }
-        });
-        
-        // Update grid references
-        grid = newGrid;
-        nextGrid = newNextGrid;
-        
-        // Redraw grid lines
-        gridGraphics = createGraphics(width, height);
-        drawGridLines();
-        
-        // Redraw
-        background(0);
-        image(gridGraphics, 0, 0);
-        drawLiveCells();
-        
-        // Update population display
-        population = LiveCells.size;
-        updatePopulationDisplay();
-    }
-}
-
 //===== DRAWING FUNCTIONS ======
 
-// Draw grid lines on the graphics buffer
-function drawGridLines() {
-    gridGraphics.background(0);
-    gridGraphics.stroke(50);
-    gridGraphics.strokeWeight(1);
+function drawGrid() {
+    // Clear the canvas
+    background(0);
     
-    // Draw vertical lines
+    // Draw grid lines
+    stroke(50);
+    strokeWeight(1);
+    
+    // Vertical lines
     for (let x = 0; x <= width; x += cellSize) {
-        gridGraphics.line(x, 0, x, height);
+        line(x, 0, x, height);
     }
     
-    // Draw horizontal lines
+    // Horizontal lines
     for (let y = 0; y <= height; y += cellSize) {
-        gridGraphics.line(0, y, width, y);
+        line(0, y, width, y);
     }
+    
+    // Draw live cells
+    drawLiveCells();
 }
 
-// Draw live cells
 function drawLiveCells() {
     noStroke();
-    fill(255);
+    fill(255); // White
     
     LiveCells.forEach(key => {
         const [i, j] = JSON.parse(key);
@@ -217,30 +179,33 @@ function drawLiveCells() {
     });
 }
 
-// Main draw function (called by p5.js animation loop)
-function draw() {
-    // Static grid is already drawn in setup/resize
-    // Just draw live cells on top
-    drawLiveCells();
-}
-
-//===== MOUSE/TAP HANDLING ======
+//===== MOUSE HANDLING ======
 
 function mousePressed() {
     // Check if click is inside canvas
     if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) {
         return;
     }
-    
     if (!canPress) return;
     
-    // Calculate grid cell from mouse coordinates
+    // Get the canvas position on screen
+    const rect = canvasElement.getBoundingClientRect();
+    
+    // Calculate mouse position relative to canvas
+    // event.clientX/Y are screen coordinates, rect.left/top are canvas position
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    
+    
+    // Calculate which cell was clicked
     let col = Math.floor(mouseX / cellSize);
     let row = Math.floor(mouseY / cellSize);
     
     // Ensure within bounds
-    col = constrain(col, 0, cols - 1);
-    row = constrain(row, 0, rows - 1);
+    col = Math.max(0, Math.min(col, cols - 1));
+    row = Math.max(0, Math.min(row, rows - 1));
+    
+    console.log(`Clicked cell: [${col}, ${row}]`);
     
     // Toggle cell state
     const key = JSON.stringify([col, row]);
@@ -258,10 +223,10 @@ function mousePressed() {
     // Update and redraw
     population = LiveCells.size;
     updatePopulationDisplay();
-    redraw();
+    drawGrid();
 }
 
-//===== GAME LOGIC FUNCTIONS ======
+//===== GAME FUNCTIONS ======
 
 function startGame() {
     if (intervalID === null) {
@@ -285,8 +250,6 @@ function startGame() {
 }
 
 function updateGeneration() {
-    if (!grid) return;
-    
     const cellsToCheck = new Set();
     
     // Get all live cells and their neighbors
@@ -294,33 +257,27 @@ function updateGeneration() {
         const [col, row] = JSON.parse(key);
         cellsToCheck.add(key);
         
-        // Add all 8 neighbors
         for (let [dx, dy] of NEIGHBOURS) {
-            const [nx, ny] = getToroidalCoordinates(col + dx, row + dy, cols, rows);
+            let [nx, ny] = getToroidalCoordinates(col + dx, row + dy, cols, rows);
             cellsToCheck.add(JSON.stringify([nx, ny]));
         }
     });
     
     const nextLiveCells = new Set();
     
-    // Apply Conway's rules
     cellsToCheck.forEach(key => {
         const [x, y] = JSON.parse(key);
         const isAlive = grid[x][y] === 1;
         const liveNeighbours = countLiveNeighbours(x, y);
         
         if (isAlive) {
-            // Rule 1 & 3: Underpopulation or overpopulation
             if (liveNeighbours < 2 || liveNeighbours > 3) {
                 nextGrid[x][y] = 0; // Dies
-            }
-            // Rule 2: Survival
-            else if (liveNeighbours === 2 || liveNeighbours === 3) {
+            } else if (liveNeighbours === 2 || liveNeighbours === 3) {
                 nextGrid[x][y] = 1; // Lives
                 nextLiveCells.add(key);
             }
         } else {
-            // Rule 4: Reproduction
             if (liveNeighbours === 3) {
                 nextGrid[x][y] = 1; // Becomes alive
                 nextLiveCells.add(key);
@@ -350,6 +307,9 @@ function updateGeneration() {
     
     updatePopulationDisplay();
     updateGenerationDisplay();
+    
+    // Redraw
+    drawGrid();
 }
 
 function pauseGame() {
@@ -391,12 +351,69 @@ function resetGame() {
     updatePopulationDisplay();
     
     // Redraw empty grid
-    if (gridGraphics) {
-        background(0);
-        image(gridGraphics, 0, 0);
-    }
+    drawGrid();
     
     console.log("Game reset");
+}
+
+//===== RESPONSIVE HANDLING ======
+
+function handleResize() {
+    // Get container
+    const container = document.getElementById('game-canvas-container');
+    
+    // Get available space
+    const containerWidth = container.clientWidth || 400;
+    const containerHeight = container.clientHeight || 400;
+    const availableSize = Math.min(containerWidth, containerHeight);
+    
+    // Calculate new cell size
+    const newCellSize = Math.max(4, Math.floor(availableSize / GRID_SIZE));
+    const newCanvasSize = newCellSize * GRID_SIZE;
+    
+    // Only resize if cell size changed significantly (at least 1 pixel)
+    if (Math.abs(newCellSize - cellSize) >= 1) {
+        console.log(`Resizing: New cell size = ${newCellSize}px, New canvas = ${newCanvasSize}x${newCanvasSize}`);
+        
+        // Store current live cells
+        const oldLiveCells = Array.from(LiveCells).map(str => JSON.parse(str));
+        
+        // Update cell size
+        cellSize = newCellSize;
+        
+        // Resize canvas
+        resizeCanvas(newCanvasSize, newCanvasSize);
+        
+        // Update canvas element attributes
+        canvasElement.width = newCanvasSize;
+        canvasElement.height = newCanvasSize;
+        canvasElement.style.width = `${newCanvasSize}px`;
+        canvasElement.style.height = `${newCanvasSize}px`;
+        
+        // Recreate grids
+        const newGrid = make2DArray(cols, rows);
+        const newNextGrid = make2DArray(cols, rows);
+        
+        // Clear and restore live cells
+        LiveCells.clear();
+        oldLiveCells.forEach(([col, row]) => {
+            if (col >= 0 && col < cols && row >= 0 && row < rows) {
+                newGrid[col][row] = 1;
+                LiveCells.add(JSON.stringify([col, row]));
+            }
+        });
+        
+        // Update grid references
+        grid = newGrid;
+        nextGrid = newNextGrid;
+        
+        // Redraw
+        drawGrid();
+        
+        // Update population display
+        population = LiveCells.size;
+        updatePopulationDisplay();
+    }
 }
 
 //===== DISPLAY FUNCTIONS ======
@@ -425,21 +442,43 @@ function disableMousePress() {
 
 //===== INITIALIZATION ======
 
-// Initialize when the page loads
+// Initialize when page loads
 window.addEventListener('load', () => {
-    // Small delay to ensure all CSS is loaded
+    // Wait for CSS to load and DOM to be ready
     setTimeout(() => {
         if (typeof setup === 'function') {
             setup();
-            console.log("Conway's Game of Life initialized successfully");
+            
+            // Add a test pattern to verify drawing works
+            setTimeout(() => {
+                console.log("Adding test pattern...");
+                
+                // Add a simple pattern (glider) in the top-left corner
+                const testPattern = [
+                    [1, 0], [2, 1], [0, 2], [1, 2], [2, 2]
+                ];
+                
+                testPattern.forEach(([col, row]) => {
+                    if (col < cols && row < rows) {
+                        grid[col][row] = 1;
+                        LiveCells.add(JSON.stringify([col, row]));
+                    }
+                });
+                
+                population = LiveCells.size;
+                updatePopulationDisplay();
+                drawGrid();
+                
+                console.log("Test pattern added. You should see 5 white cells forming a glider pattern.");
+            }, 500);
         }
     }, 100);
 });
 
-// For p5.js continuous animation loop
+// p5.js draw function (called automatically by p5.js)
 function draw() {
-    // Empty - we handle drawing manually in response to events
-    // This is needed for p5.js to work properly
+    // We handle all drawing manually in response to events
+    // This function is needed for p5.js but remains empty
     background(0);
 
     image(gridGraphics,0,0);
