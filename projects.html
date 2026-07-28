@@ -9,6 +9,7 @@
     
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
 <body>
     <!-- Decorative background elements -->
@@ -275,44 +276,126 @@
             </div>
             <div class="project-container">
                 <h2>Network Traffic Analyzer & Anomaly Detector</h2>
-                <p>Mock SIEM Tool</p>
+                <p>Personal Cybersecurity Project - Mock SOC Detection Tool</p>
                 <div class="project-container-info">
                     <div class="project-container-info-image">
-                        <img src="project images/Casino Royal/Casino Royal Display.png" alt="Math game screenshot">
+                        <img src="project images/Network Analyzer & Detection/alert_output-1.png" alt="Math game screenshot">
                     </div>
                     <div>
                         <h3>Description</h3>
                         <p>
-                            something something
+                            A Python based network security tool that captures live packet data, detects suspicious traffic patterns
+                            in real time, and logs structured events into Splunk for alert correlation and data visualization; mimicking
+                            a lightweight SOC detection workflow. Built as a personal cybersecurity project applying skills learned from the 
+                        <a href="https://grow.google/intl/en_ca/enroll-certificates/cybersecurity-mid/?utm_" target ="_blank"> Google Cybersecurity Certificate  </a>
+                        , including network security, SIEM tooling, and incident response following the 
+                        <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r2.pdf" target="_blank"> NIST SP 800-61 </a>  framework.
                         </p>
                     </div>
 
                     <div>
                         <h3>Features</h3>
                         <p>
-                            Some features
+                            &bull; <strong> Live Packet Capture & Parsing</strong> - Captures packets in real time using Scapy, extracting IP addresses,
+                            ports, protocols, TCP flags, and traffic direction across Ethernet, IPv4, TCP, UDP, and ARP layers.
+                            <br></br>
+                            &bull; <strong>Anomaly Detection</strong> - Three custom detection rules running continously against live traffic: 
+                            port scan detection, SYN flood detection, and ARP spoofing detection, each using an interchangable rolling time window.
+                            <br></br>
+                            &bull; <strong>Splunk Intergration</strong> - Structured JSON logs ingested into Splunk with SPL correlation searches and 
+                            a real time dashboard showing multi-stage attack patterns from the same source IP.
+                            <br></br>
+                            &bull; <strong>AI Incident Response Generator</strong> - Claude powered agent that reads alert logs and automatically
+                            produces a formal NIST SP 800-61 incident response report covering all six phases of the IR lifecycle.
+                            <br></br>
+                            &bull; <strong>Attack Simulator</strong> - Small script that crafts and injects simulated port scan, SYN flood,
+                            and ARP spoof packets for end-to-end testing of the detection script without a real attacker.
                         </p>
                     </div>
-                    
-                    <div class="project-container-info-multi-image">
-                        
+                    <div class="project-container-info-double-image">
+                        <img src="project images/Network Analyzer & Detection/alert_output-4.png" alt="Domain screenshot 1">
+                        <img src="project images/Network Analyzer & Detection/alert_output-2.png" alt="Domain screenshot 2">
                     </div>
-
-                    <div class="project-container-info-multi-image">
-                        
+                    <div class="project-container-info-image">
+                        <img src="project images/Network Analyzer & Detection/alert_output-4.png" alt="Domain screenshot 1">
                     </div>
-                    
                     <div>
-                        <p style="margin-left: 20px;">
-                            asasadcdc
-                        </p>
-                    </div>
-
-                    <div>
-                        <h3>Download</h3>
+                        <h3>Detection Rules Explained</h3>
                         <p>
-                            asdsadsad
+                            &bull; <strong>Port Scan Detection</strong> - A port scan is a method of probing a server to identify
+                            which communication ports are open, closed, of filtered, this could be the first step before an actual attack.
+                            The script detects this by tracking how many unique destination ports a single source IP contacts within a 60 second
+                            window. Once the count exceeds X number of unique ports (~15 in this case), an alert fires.
+                            <br></br>
+                            &bull; <strong>SYN Flood Detection</strong> - A SYN flood is a type of Denial of Service (DoS) attack
+                            that overloads a server's resources by initiating-but never completing-a TCP connection. Normally, devices 
+                            establish a connection using a "three way handshake". The client sends a <strong>SYN</strong> (Synchronize)
+                            packet to the server. The server responds with a <strong>SYN-ACK</strong> packet and allocates resources for
+                            the connection. The client completes the connection by sending an <strong>ACK</strong> packet. In a SYN flood, the 
+                            attacker sends a barrage of <strong>SYN</strong> requests to the server. This leaves the server with countless "half-open"
+                            connections, tying up it's memory and ports until it runs out of resources and cannot accept legitimate traffic. The script
+                            detects this by counting how many TCP packets carrying only the SYN flag arrive from a single source IP within a 5 second
+                            window. If the count exceeds 50 packets, an alert fires.
+                            <br></br>
+                            &bull; <strong>ARP Spoof Detection</strong> - ARP spoofing (also called ARP poisoning or man-in-the-middle attack) is a cyberattack
+                            in which a hacker sends fake ARP messages onto a local network. The goal is to trick a device into linking 
+                            its IP address with the attacker's MAC address, allowing the attacker to intercept, modify, or block traffic. The 
+                            script detects this by building a trusted IP to MAC mapping table at startup, based on the OS ARP cache. Every ARP packet
+                            is checked against this table, if a watched IP is claimed by a different MAC than what was recored, a CRITICAL alert is fired.
                         </p>
+                    </div>
+                    <div>
+                        <h3>What I Learned</h3>
+                        <p>
+                            &bull; Going into this project I had never used <a href="https://scapy.net/" target="_blank">Scapy</a>, never touched 
+                            <a href="https://www.splunk.com/" target="_blank">Splunk</a>, and had no real experience capturing &
+                            analyzing raw network packets, besides using <a href="https://www.wireshark.org/" target="_blank">WireShark</a> once in University. I had to learn how packets are structured
+                            at each layer of the network stack, how to extract meaningful fields from raw packets in real time, and how to design stateful
+                            detection logic that persists state across thousands of packets without slowing the capture down.
+                            <br></br>
+                            &bull; The AI incident response generator was also my first time integrating an AI API directly into a Python script. building
+                            something that reads real alert data from a JSON file which gets summarized and stored as a list and dictionary for easy readability.
+                            It was my first time working/building an AI agent and was suprised by how easiy the implementation was and how it streamlined production
+                            to really bring my project together.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Technical Challenges</h3>
+                        <p>
+                            &bull; <strong>tcpdump on Windows</strong> - The original design was to have tcpdump running in parallel with Scapy to write
+                            a raw .pcap backup file. This was originally set because tcpdump is more optimized and can run continous, long-term packet captures without exhausting the 
+                            system's memory, unlike Scapy which is significantly more resource intensive. Consequently, tcpdump doesn't exist natively on Windows
+                            (duhhhh), which broke the capture pipeline entirely. The simple fix was to replace tcpdump with Scapy's built-in PcapWriter, which
+                            writes packets to disk as they arrive with no external dependencies.
+                            <br></br>
+                            &bull;<strong>Windows Raw Packet Injection</strong> - The biggest challenge that left me confused was discovering that Windows
+                            blocks Scapy from injecting packets with spoofed source IPs on real network interfaces. When the attack simulator sent crafted
+                            packets with a fake source IP, Windows would rewrite or reject them before they reached the sniffer; meaning, the anomaly Detector
+                            never saw them. The fix was to route all simulated attack traffic through the Software Loopback Interface, where Windows does 
+                            not apply the same restrictions. 
+                            <br></br>
+                            &bull;<strong>AI API Rate Limits</strong> - The IR report generator sends a large prompt containing all captured alert
+                            data. Both OpenAI and Google Gemini's free tiers hit quota limits immediately given the size of the payload. After having explored 
+                            both free options and paid options, I ultimately decided to load funds into my OpenAI account to increase my rate limit. This
+                            wasnt ideal, as I didnt expect to be dumping some money into this project, however it was worth the results.
+                        </p>
+                    </div>
+                    <div class="pdf-viewer-container">
+                        <div class="pdf-toggle" id="irReportToggle">
+                            View Generated Incident Response Report
+                        </div>
+                        <div class="pdf-iframe-container" id="irReportContainer">
+                            <div id="irReportContent" style="
+                                padding: 30px;
+                                color:#e0e0e0;
+                                background: rgba(255,255,255,0.05);
+                                border-radius: 10px;
+                                text-align: left;
+                                line-height: 1.7;
+                                font-size: 0.95rem;">
+                                Loading Report...
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -365,6 +448,22 @@
                 }
             });
         });
+            // Toggle open/close
+        document.getElementById('irReportToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.getElementById('irReportContainer').classList.toggle('active');
+        });
+
+        // Fetch and render the markdown file
+        fetch('project images/Network Analyzer & Detection/IR_Report.md')
+            .then(response => response.text())
+            .then(markdown => {
+                document.getElementById('irReportContent').innerHTML = marked.parse(markdown);
+            })
+            .catch(() => {
+                document.getElementById('irReportContent').innerHTML = 
+                    '<p>Report could not be loaded.</p>';
+            });
     </script>
 </body>
 </html>
